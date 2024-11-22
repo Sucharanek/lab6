@@ -1,19 +1,21 @@
 #!/bin/bash
 
-kopiowany_katalog="~/Desktop/lab6"
+kopiowany_katalog="/home/debian/Desktop/lab6/"
 kopiowany_do="/backup"
-LOG="$HOME/backup.log"
+LOG="/backup/backup.log"
 DATA=$(date +"%Y-%m-%d")
-PLIK="backup_${DATA}.tar.gz"
+PLIK="$kopiowany_do/backup_${DATA}.tar.gz"
 kopiowany_katalog=$(eval echo "$kopiowany_katalog")
 
-mkdir -p "$kopiowany_do"
-mkdir -p "$(dirname "$LOG")"
+echo "$(date): Rozpoczecie tworzenia kopii zapasowej" >> "$LOG"
 
-printf "[%s] Tworzenie kopii: %s\n" "$(date +"%Y-%m-%d %H:%M:%S")" "$kopiowany_katalog " >> "$LOG"
-
-if tar -czf "$kopiowany_do/$PLIK" $kopiowany_katalog >> "$LOG" 2>&1; then
-	printf "[%s] Tworzenie kopii: %s\n" "$(date +'%Y-%m-%d %H-%M-%S')" "$kopiowany_katalog" >> "%LOG"
+if  [ -d "$kopiowany_katalog" ]; then
+	tar -czf "$PLIK" -C "$kopiowany_katalog" . && \
+	echo "$(date): Udana kopia: $PLIK" >> "$LOG"
 else
-	printf "[%s] Niepowodzenie: %s\n" "$(date +'%Y-%m-%d %H-%M-%S')" >> "%LOG"
-fi
+	echo "$(date): Kopia nieudana" >> "$LOG"
+	exit 1
+fi 
+
+echo "$(date): Zakonczono tworzenie kopii zapasowej" >> "$LOG"
+
